@@ -4,9 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" initial-scale=1.0">
     <title>display my picture</title>
+
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="result"></div>
+    
+    <header>
+        <input type="text" id="searchInput" placeholder="Search images...">
+        <button id="searchButton">Search</button>
+    </header>
+
+    <main id="imageContainer">
+        <!-- <div id="result"></div> -->
+    </main>
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="modalImage" src="" alt="Image" />
+            <div class="modal-info">
+                <h3 id="modalTitle"></h3>
+                <p id="modalTags"></p>
+                <p id="modalLikes"></p>
+                <a id="modalLink" href="#" target="_blank">View on Pixabay</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <button id="loadMoreButton">Show More Images</button>
+    </footer>
+
+    
 
     <script src="script.js"></script>
 </body>
