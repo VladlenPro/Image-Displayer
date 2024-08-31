@@ -7,16 +7,27 @@ const imagesPerBatch = 20; // Number of images to display per batch
 const maxImagesPerPage = 200; // Maximum images per pag
 
 
-async function fetchImages(searchTerm = searchForApiRequest) {
+// async function fetchImages(searchTerm = searchForApiRequest) {
+//   try {
+//       const response = await fetch(`https://pixabay.com/api/?key=${apikey}&q=${searchTerm}&image_type=photo&per_page=${maxImagesPerPage}&page=${currentPage}`);
+//       const data = await response.json();
+
+//       images = images.concat(data.hits);
+
+//       displayNextBatch();
+//   } catch (error) {
+//       console.error('Error fetching images:', error);
+//   }
+// }
+
+async function fetchRandomImages() {
   try {
-      const response = await fetch(`https://pixabay.com/api/?key=${apikey}&q=${searchTerm}&image_type=photo&per_page=${maxImagesPerPage}&page=${currentPage}`);
+      const response = await fetch('/api/random');
       const data = await response.json();
-
-      images = images.concat(data.hits);
-
+      imagesCache.push(...data.hits);
       displayNextBatch();
   } catch (error) {
-      console.error('Error fetching images:', error);
+      console.error('Error fetching random images:', error);
   }
 }
 
@@ -131,4 +142,7 @@ document.getElementById('searchButton').addEventListener('click', () => {
   }
 });
 
-document.addEventListener('DOMContentLoaded', fetchImages);
+// document.addEventListener('DOMContentLoaded', fetchImages);
+document.addEventListener('DOMContentLoaded', async () => {
+  await fetchRandomImages();
+});
