@@ -57,7 +57,13 @@ function createCard(data) {
                       data-user="${data.user}" 
                       data-tags="${data.tags}" 
                       data-likes="${data.likes}" 
-                      data-pageURL="${data.pageURL}">`;
+                      data-pageURL="${data.pageURL}">
+                    <div class="hover-info">
+                        <p>User: ${data.user}</p>
+                        <p>Tags: ${data.tags}</p>
+                    </div>
+                    <span class="favorite-icon">&#9829;</span> <!-- Heart icon -->`;
+                      
 
   return card;
 }

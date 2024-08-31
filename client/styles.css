@@ -60,16 +60,47 @@ main#imageContainer {
 
 /* Image card styling */
 .image-card {
+    position: relative;
+    overflow: hidden;
     border: 1px solid #ddd;
     border-radius: 8px;
-    overflow: hidden;
     background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
 }
 
 .image-card:hover {
     transform: translateY(-5px);
+}
+
+.image-card .hover-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.image-card:hover .hover-info {
+    opacity: 1;
+}
+
+/* Favorite icon styling */
+.favorite-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.favorite-icon.favorited {
+    color: red;
 }
 
 .image-card img {
