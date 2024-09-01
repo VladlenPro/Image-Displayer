@@ -9,12 +9,10 @@ const PORT = process.env.PORT || 5501;
 const PIXABAY_API_KEY = process.env.PIXABAY_API_KEY;
 const cache = {};
 
-// Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'client'))); // Serve static files from the 'client' folder
+app.use(express.static(path.join(__dirname, 'client')));
 
-// Route to serve the HTML page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'client', 'index.html'));
 });
@@ -40,25 +38,22 @@ app.get('/api/search', async (req, res) => {
       },
     });
 
-    const totalPages = Math.ceil(response.data.totalHits / 200); // Calculating total pages
+    const totalPages = Math.ceil(response.data.totalHits / 200); 
     const result = {
       hits: response.data.hits,
       totalHits: response.data.totalHits,
       totalPages: totalPages
     };
 
+    cache[cacheKey] = result;
 
-    // Cache the response
-    cache[cacheKey] = response.data;
-
-    res.json(response.data);
+    res.json(result);
   } catch (error) {
     console.error('Error fetching images:', error);
     res.status(500).json({ error: 'Error fetching images from Pixabay.' });
   }
 });
 
-// Route for random images when no search phrase is entered
 app.get('/api/random', async (req, res) => {
   try {
     const response = await axios.get('https://pixabay.com/api/', {
@@ -66,7 +61,7 @@ app.get('/api/random', async (req, res) => {
         key: PIXABAY_API_KEY,
         q: '',
         image_type: 'photo',
-        per_page: 30, // Show initial set of random images
+        per_page: 20,
         order: 'popular',
       },
     });
@@ -78,7 +73,6 @@ app.get('/api/random', async (req, res) => {
   }
 });
 
-// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
