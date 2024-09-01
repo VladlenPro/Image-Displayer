@@ -5,24 +5,38 @@ let images = []; // Array to hold all fetched images
 let displayedCount = 0; // Track the number of images currently displayed
 const imagesPerBatch = 20; // Number of images to display per batch
 const maxImagesPerPage = 200; // Maximum images per pag
+let imagesCache = [];
 
 
-// async function fetchImages(searchTerm = searchForApiRequest) {
-//   try {
-//       const response = await fetch(`https://pixabay.com/api/?key=${apikey}&q=${searchTerm}&image_type=photo&per_page=${maxImagesPerPage}&page=${currentPage}`);
-//       const data = await response.json();
+document.addEventListener('DOMContentLoaded', async () => {
+  await fetchRandomImages();
+});
 
-//       images = images.concat(data.hits);
+document.getElementById('searchButton').addEventListener('click', async () => {
+  const query = document.getElementById('searchInput').value.trim();
+  if (query) {
+      currentPage = 1;
+      imagesCache = [];
+      displayedCount = 0;
+      await fetchImages(query);
+  }
+});
 
-//       displayNextBatch();
-//   } catch (error) {
-//       console.error('Error fetching images:', error);
-//   }
-// }
+async function fetchImages(query) {
+  try {
+      const response = await fetch(`http://localhost:5501/api/search?query=${query}&page=${currentPage}`);
+      const data = await response.json();
+      imagesCache.push(...data.hits);
+      displayNextBatch();
+      currentPage++;
+  } catch (error) {
+      console.error('Error fetching images:', error);
+  }
+}
 
 async function fetchRandomImages() {
   try {
-      const response = await fetch('/api/random');
+      const response = await fetch('http://localhost:5501/api/random');
       const data = await response.json();
       imagesCache.push(...data.hits);
       displayNextBatch();
@@ -31,8 +45,9 @@ async function fetchRandomImages() {
   }
 }
 
+
 function displayNextBatch() {
-  const nextBatch = images.slice(displayedCount, displayedCount + imagesPerBatch);
+  const nextBatch = imagesCache.slice(displayedCount, displayedCount + imagesPerBatch);
   
   nextBatch.forEach(image => {
       const card = createCard(image);
@@ -41,7 +56,7 @@ function displayNextBatch() {
 
   displayedCount += nextBatch.length;
 
-  if (displayedCount < images.length || currentPage < 2) {
+  if (displayedCount < imagesCache.length || currentPage < 2) {
       document.querySelector('footer').style.display = 'flex';
   } else {
       document.querySelector('footer').style.display = 'none';
@@ -51,7 +66,7 @@ function displayNextBatch() {
 }
 
 function loadMoreImages() {
-  if (displayedCount < images.length) {
+  if (displayedCount < imagesCache.length) {
       displayNextBatch();
   } else if (currentPage === 1) {
       currentPage++;
@@ -129,20 +144,3 @@ window.addEventListener('click', (event) => {
   }
 });
 
-document.getElementById('searchButton').addEventListener('click', () => {
-  const searchInput = document.getElementById('searchInput').value.trim();
-  if (searchInput) {
-      searchForApiRequest = searchInput;
-      document.getElementById('imageContainer').innerHTML = '';
-      currentPage = 1;
-      images = [];
-      displayedCount = 0;
-      currentPage = 1;
-      fetchImages(searchInput);
-  }
-});
-
-// document.addEventListener('DOMContentLoaded', fetchImages);
-document.addEventListener('DOMContentLoaded', async () => {
-  await fetchRandomImages();
-});

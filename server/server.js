@@ -5,7 +5,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5500;
+const PORT = process.env.PORT || 5501;
 const PIXABAY_API_KEY = process.env.PIXABAY_API_KEY;
 const cache = {};
 
@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 
 // Route for searching images
 app.get('/api/search', async (req, res) => {
-  const { query, page = 1 } = req.query;
+  const { query, page } = req.query;
   const cacheKey = `${query}-${page}`;
 
   // Check cache first
@@ -35,10 +35,18 @@ app.get('/api/search', async (req, res) => {
         key: PIXABAY_API_KEY,
         q: query,
         image_type: 'photo',
-        per_page: 300, // Max per page to reduce requests
+        per_page: 200, // Max per page to reduce requests
         page: page,
       },
     });
+
+    const totalPages = Math.ceil(response.data.totalHits / 200); // Calculating total pages
+    const result = {
+      hits: response.data.hits,
+      totalHits: response.data.totalHits,
+      totalPages: totalPages
+    };
+
 
     // Cache the response
     cache[cacheKey] = response.data;
