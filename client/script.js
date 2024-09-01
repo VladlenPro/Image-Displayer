@@ -1,11 +1,9 @@
-let apikey = "45700319-1ce650856152d0b2e029ed6be&q";
-let searchForApiRequest = "red";
+
 let currentPage = 1; // Start with page 1
-let images = []; // Array to hold all fetched images
 let displayedCount = 0; // Track the number of images currently displayed
 const imagesPerBatch = 20; // Number of images to display per batch
-const maxImagesPerPage = 200; // Maximum images per pag
 let imagesCache = [];
+let numberOfPages = 0;
 
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -15,9 +13,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 document.getElementById('searchButton').addEventListener('click', async () => {
   const query = document.getElementById('searchInput').value.trim();
   if (query) {
+      document.getElementById('imageContainer').innerHTML = '';
       currentPage = 1;
       imagesCache = [];
       displayedCount = 0;
+      numberOfPages = 0;
       await fetchImages(query);
   }
 });
@@ -27,6 +27,7 @@ async function fetchImages(query) {
       const response = await fetch(`http://localhost:5501/api/search?query=${query}&page=${currentPage}`);
       const data = await response.json();
       imagesCache.push(...data.hits);
+      numberOfPages = data.totalPages;
       displayNextBatch();
       currentPage++;
   } catch (error) {
@@ -56,7 +57,7 @@ function displayNextBatch() {
 
   displayedCount += nextBatch.length;
 
-  if (displayedCount < imagesCache.length || currentPage < 2) {
+  if (displayedCount <= imagesCache.length && currentPage <= numberOfPages) {
       document.querySelector('footer').style.display = 'flex';
   } else {
       document.querySelector('footer').style.display = 'none';
@@ -68,9 +69,9 @@ function displayNextBatch() {
 function loadMoreImages() {
   if (displayedCount < imagesCache.length) {
       displayNextBatch();
-  } else if (currentPage === 1) {
-      currentPage++;
-      fetchImages();
+  } else if (currentPage <= numberOfPages) {
+    const query = document.getElementById('searchInput').value.trim();
+      fetchImages(query);
   }
 }
 
